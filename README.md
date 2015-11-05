@@ -64,67 +64,63 @@ $ make clean
 The `powercrust` options are:
 
 ```console
--t is cos (pi-alpha), where alpha is the angle b/w "deep" intersecting
-   balls (default = 0.4). When a pole gets labeled as inside or
-   outside, it propagates the same label to any neighboring pole
-   whose polar ball deeply intersects its own. We have not seen
-	 any situations in which we wanted to change this default value.
+-t  is cos (pi-alpha), where alpha is the angle b/w "deep" intersecting balls
+    (default = 0.4). When a pole gets labeled as inside or outside, it
+    propagates the same label to any neighboring pole whose polar ball deeply
+    intersects its own. We have not seen any situations in which we wanted to
+    change this default value.
 
--R estimate for sampling density constant. 1.0 or larger turns it off.
-   (default = 0.6). Used to estimate whether Voronoi cells are
-   "well-shaped", for handling noise and for the sharp-corners
-   hack. This is the r in r-sampling, that is, the minimum distance
-   to the nearest sample on the surface, as a fraction of distance
-   to the medial axis. When r is small the sampling is expected to be
-	 very dense, the Voronoi cells are expected
-   to be really long and skinny and the poles of fat Voronoi cells are
-   thrown away. On noise-free inputs with no sharp corners, you
-	 can give a value >= 1 for -R, and perhaps get a good reconstruction
-	 from a sparser input sample. Setting -R small might help get good
-	 reconstructions from dense but noisy samples.
+-R  estimate for sampling density constant. 1.0 or larger turns it off.
+    (default = 0.6). Used to estimate whether Voronoi cells are "well-shaped",
+    for handling noise and for the sharp-corners hack. This is the r in
+    r-sampling, that is, the minimum distance to the nearest sample on the
+    surface, as a fraction of distance to the medial axis. When r is small the
+    sampling is expected to be very dense, the Voronoi cells are expected to be
+    really long and skinny and the poles of fat Voronoi cells are thrown away.
+    On noise-free inputs with no sharp corners, you can give a value >= 1 for
+    -R, and perhaps get a good reconstruction from a sparser input sample.
+    Setting -R small might help get good reconstructions from dense but noisy
+    samples.
 
--B throw away both poles for cells which are not long and skinny.
-   Use the -B flag on noise-free inputs from surfaces with
-	 sharp corners, and make sure the value given with -R is less
-	 than one (the smaller the -R value, the more it will interpolate
-	 data near the corners from the data on adjacent smooth surfaces).
+-B  throw away both poles for cells which are not long and skinny. Use the -B
+    flag on noise-free inputs from surfaces with sharp corners, and make sure
+    the value given with -R is less than one (the smaller the -R value, the
+    more it will interpolate data near the corners from the data on adjacent
+    smooth surfaces).
 
--D no propagation for 1st pole of Voronoi cells which are not long and
-	 skinny, Use the -D flag when reconstructing surfaces with
-	 boundaries, it allows a sample on the boundary to have two
-	 outside poles.
+-D  no propagation for 1st pole of Voronoi cells which are not long and skinny.
+    Use the -D flag when reconstructing surfaces with boundaries, it allows a
+    sample on the boundary to have two outside poles.
 
--w same as -t, but for trying to label unlabeled poles, the second time
-	 around (default = 0.3). Once you start fooling around with the
-	 -D,-R and/or -B options, some poles might fail to be labeled by the
-   regular algorithm. This parameter is passed to a second-pass
-	 clean-up function which should be a little more liberal in
-	 propagating labels. Make the -w value smaller when you see lots
-	 of messages about "unlabeled pole".
-   Note: the boundaries between the power cells of labeled and
-	 unlabeled poles are NOT output as part of the power crust.
+-w  same as -t, but for trying to label unlabeled poles, the second time around
+    (default = 0.3). Once you start fooling around with the -D,-R and/or -B
+    options, some poles might fail to be labeled by the regular algorithm. This
+    parameter is passed to a second-pass clean-up function which should be a
+    little more liberal in propagating labels. Make the -w value smaller when
+    you see lots of messages about "unlabeled pole".
+    Note: the boundaries between the power cells of labeled and
+    unlabeled poles are NOT output as part of the power crust.
 
--p This option is used when the input file is actually a set of poles
-   along with their labels. It skips the pole computation and labeling
-	 steps of the algorithm. Use this option for recomputing the power
-	 crust after you do simplification of the power shape.
+-p  This option is used when the input file is actually a set of poles along
+    with their labels. It skips the pole computation and labeling steps of the
+    algorithm. Use this option for recomputing the power crust after you do
+    simplification of the power shape.
 ```
 
 There are also two options which are passed directly to hull:
 
 ```console
--i the name of the input file.
-	 Input file is just a list of 3D (x,y,z) point coordinates, in ASCII.
-	 Can be floating point, BUT they will get rounded to integers.
-	 To use little numbers, less than one, put a big number in the
-	 -m option, below.
-	 When the -p argument is used, the input should be a list of poles,
-	 in the format of the output file `inpball`: (x,y,z,radius).
+-i  the name of the input file.
+    Input file is just a list of 3D (x,y,z) point coordinates, in ASCII. Can be
+    floating point, BUT they will get rounded to integers. To use little
+    numbers, less than one, put a big number in the -m option, below. When the
+    -p argument is used, the input should be a list of poles, in the format of
+    the output file `inpball`: (x,y,z,radius).
 
--m multiplier. The first thing hull does is multiply all the floating
-   point numbers in the input by this multiplier and round them into
-   integers. If you forget the m option, and your input is all
-   fp numbers less than one, you get a one-point output.
+-m  multiplier. The first thing hull does is multiply all the floating point
+    numbers in the input by this multiplier and round them into integers. If you
+    forget the m option, and your input is all fp numbers less than one, you get
+    a one-point output.
 ```
 
 The output is several files:
