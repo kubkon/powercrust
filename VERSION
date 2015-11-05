@@ -1,0 +1,14 @@
+Version 1.2 - Fixes Linux core dump.
+Maria Jump - April 2002
+
+Version 1.1 - Fixes three bugs reported by users.
+Nina Amenta - Feb 2002
+
+1. Attempt to fix Linux coredumps.
+
+2. Variable name ``or'' was changed to ``Or'' to prevent some
+	pre-processors replacing it with ``||'' in setNormals.C.
+
+3. Nasty typo "-" should have been "=" fixed in setNormals.C.
+	Two users told me about this - thanks! The triangle orientation
+	utility should work consistently now. 
