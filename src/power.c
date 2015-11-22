@@ -9,9 +9,9 @@
  * Power Crust software, by Nina Amenta, Sunghee Choi and Ravi Krishna Kolluri.
  * Copyright (c) 2000 by the University of Texas
  * Permission to use, copy, modify, and distribute this software for any
- * purpose without fee under the GNU Public License is hereby granted, 
- * provided that this entire notice  is included in all copies of any software 
- * which is or includes a copy or modification of this software and in all copies 
+ * purpose without fee under the GNU Public License is hereby granted,
+ * provided that this entire notice  is included in all copies of any software
+ * which is or includes a copy or modification of this software and in all copies
  * of the supporting documentation for such software.
  * THIS SOFTWARE IS BEING PROVIDED "AS IS", WITHOUT ANY EXPRESS OR IMPLIED
  * WARRANTY.  IN PARTICULAR, NEITHER THE AUTHORS NOR AT&T MAKE ANY
@@ -19,7 +19,7 @@
  * OF THIS SOFTWARE OR ITS FITNESS FOR ANY PARTICULAR PURPOSE.
  */
 
-#include "hull.h" 
+#include "hull.h"
 
 extern double theta;
 extern FILE *PC, *PNF, *INFPOLE,*AXIS,*AXISFACE; /* *RT, *PS, *PR; */
@@ -45,24 +45,24 @@ int v3[6]={2,3,1,3,0,0};
 int v4[6]={3,1,2,0,2,1};
 
 
-void *compute_2d_power_vv(simplex *s, void *p) { 
+void *compute_2d_power_vv(simplex *s, void *p) {
     /* computes Voronoi vertices  */
 
 	static out_func *out_func_here;
 	point v[MAXDIM];
 	int j,k,inf=0, index;
     double cc[2], cond, ta[3][3];
-		
+
 	if (p) {out_func_here = (out_func*)p; if (!s) return NULL;}
 
 	index = 0;
 	for (j=0;j<3;j++) {
-        v[j] = s->neigh[j].vert; 
-        /* v[j] stores coordinates of j'th vertex of simplex s; j=0..3 */ 
-        if (v[j]==infinity) { /* means simplex s is on the convex hull */
+        v[j] = s->neigh[j].vert;
+        /* v[j] stores coordinates of j'th vertex of simplex s; j=0..3 */
+        if (v[j]==coordsAtInfinity) { /* means simplex s is on the convex hull */
             inf=1;
             continue; /* skip the rest of the for loop; process next vertex */
-        }  
+        }
         /*i=(site_num)(v[j]); i is the index of the vertex v[j] */
         for (k=0;k<3;k++) {
             ta[index][k] = v[j][k]/mult_up;
@@ -76,16 +76,16 @@ void *compute_2d_power_vv(simplex *s, void *p) {
 	if (!inf) { /* if not faces on convex hull, compute circumcenter*/
         for (k=0;k<3;k++)
             /*	  printf("%f %f %f\n",ta[k][0],ta[k][1],ta[k][2]);*/
-            triorthocenter(ta[0], ta[1], ta[2], cc, &cond);	 
+            triorthocenter(ta[0], ta[1], ta[2], cc, &cond);
         /* cc is the displacement of orthocenter from ta[0] */
         /* cond is the denominator ( orient2d ) value        */
         if (cond!=0) { /* ignore them if cond = 0 */
 			s->vv = (Coord*) malloc(sizeof(Coord)*2);
 			for (k=0;k<2;k++) {
-                s->vv[k] = ta[0][k]+cc[k];	
+                s->vv[k] = ta[0][k]+cc[k];
 			}
 			s->status = VV;
-			
+
         }
         else { /* if cond=0, s is SLIVER */
             fprintf(DFILE,"sliver!\n");
@@ -96,43 +96,12 @@ void *compute_2d_power_vv(simplex *s, void *p) {
 	else { /* if on conv hull, ignore */
 		s->vv = NULL;
 		s->status = CNV;
-	} 	
+	}
 
 	return NULL;
 }
 
-/*
-void *reg_triang(simplex *s, void *p) { 
-
-	static out_func *out_func_here;
-	point v[MAXDIM];
-	int j,k,vnum;
-        double cc[3], cond, ta[4][4];
-		
-	if (p) {out_func_here = (out_func*)p; if (!s) return NULL;}
-
-	for (j=0;j<cdim;j++) {
-	  v[j] = s->neigh[j].vert; 
-	    
-	  if (v[j]==infinity) { 
-	    return NULL; 
-	  }  
-	}
-
-	for (j=0;j<cdim;j++) {
-                vnum=0;
-                for (k=0;k<cdim;k++) {
-                        if (k==j) continue;
-                        v[vnum++] = (s->neigh[k].vert);
-                }
-	       	fprintf(RT,"3 %d %d %d\n",(site_num)(v[0]),(site_num)(v[1]),(site_num)(v[2])); 
-        }
-        return NULL; 
-}
-*/
-
-
-void *compute_3d_power_vv(simplex *s, void *p) { 
+void *compute_3d_power_vv(simplex *s, void *p) {
 
 	static out_func *out_func_here;
 	point v[MAXDIM];
@@ -141,18 +110,18 @@ void *compute_3d_power_vv(simplex *s, void *p) {
 	struct edgesimp *newplist, *pindex;
 
 	if (p) {
-        out_func_here = (out_func*)p; 
+        out_func_here = (out_func*)p;
         if (!s) return NULL;
 	}
 
 	index = 0;
 	for (j=0;j<cdim;j++) {
-        v[j] = s->neigh[j].vert; 
-        /* v[j] stores coordinates of j'th vertex of simplex s; j=0..3 */ 
-        if (v[j]==infinity) { /* means simplex s is on the convex hull */
+        v[j] = s->neigh[j].vert;
+        /* v[j] stores coordinates of j'th vertex of simplex s; j=0..3 */
+        if (v[j]==coordsAtInfinity) { /* means simplex s is on the convex hull */
             inf=1;
             continue; /* skip the rest of the for loop; process next vertex */
-        }  
+        }
         /*i=(site_num)(v[j]);  i is the index of the vertex v[j] */
         for (k=0;k<4;k++) {
             ta[index][k] = v[j][k]/mult_up; /* restore original coords   */
@@ -161,12 +130,12 @@ void *compute_3d_power_vv(simplex *s, void *p) {
         }
         index++;
 	}
- 
+
 	/* if not faces on convex hull, process */
-	if (!inf) { 
+	if (!inf) {
 
         /* build structure for each edge, including angle of intersection */
-        for (k=0;k<6;k++) { 
+        for (k=0;k<6;k++) {
             if (s->edgestatus[k]==FIRST_EDGE) { /* not visited edge */
                 pindex = adjlist[site_numm(v[v1[k]])].eptr;
                 visited_edge = 0;
@@ -177,7 +146,7 @@ void *compute_3d_power_vv(simplex *s, void *p) {
                     }
                     pindex = pindex->next;
                 }
-	
+
                 if (!visited_edge) {
                     d = sqdist(ta[v1[k]],ta[v2[k]]);
                     r1 = SQ(ta[v1[k]][0])+SQ(ta[v1[k]][1])+SQ(ta[v1[k]][2])-ta[v1[k]][3];
@@ -205,16 +174,16 @@ void *compute_3d_power_vv(simplex *s, void *p) {
             }
         }
 
-        tetorthocenter(ta[0], ta[1], ta[2], ta[3], cc, &cond);	 
+        tetorthocenter(ta[0], ta[1], ta[2], ta[3], cc, &cond);
         /* cc is the displacement of orthocenter from ta[0] */
         /* cond is the denominator ( orient2d ) value        */
         if (cond!=0) { /* ignore them if cond = 0 */
 			s->vv = (Coord*) malloc(sizeof(Coord)*3);
 			for (k=0;k<3;k++) {
-                s->vv[k] = ta[0][k]+cc[k];	
+                s->vv[k] = ta[0][k]+cc[k];
 			}
-			s->status = VV;			
-			
+			s->status = VV;
+
         }
         else { /* if cond=0, s is SLIVER */
             fprintf(DFILE,"sliver!\n");
@@ -225,12 +194,12 @@ void *compute_3d_power_vv(simplex *s, void *p) {
 	else { /* if on conv hull, ignore */
 		s->vv = NULL;
 		s->status = CNV;
-	} 	
+	}
 
 	return NULL;
 }
 
-void *compute_3d_power_edges(simplex *s, void *p) { 
+void *compute_3d_power_edges(simplex *s, void *p) {
 
 	static out_func *out_func_here;
 	point v[MAXDIM];
@@ -238,22 +207,22 @@ void *compute_3d_power_edges(simplex *s, void *p) {
 	site edge0, edge1, nextv, remv, prevv;
     double ta[4][4], r1, r2, d, e;
 	simplex *prevs, *nexts;
-        
+
 	if (p) {out_func_here = (out_func*)p; if (!s) return NULL;}
 
-	
+
 	if ((s->status == CNV)||(s->status == SLV)) return NULL; /* skip inf faces */
 	for (j=0;j<cdim;j++) {
-        v[j] = s->neigh[j].vert; 
+        v[j] = s->neigh[j].vert;
         for (k=0;k<4;k++) {
             ta[j][k] = v[j][k]/mult_up; /* restore original coords   */
         }
 	}
- 
+
 	if (!inf) {
         for (k=0;k<6;k++) { /* for each edge */
             if (s->edgestatus[k]==FIRST_EDGE) { /* not visited edge */
-	       
+
                 /* check the dihedral angle */
                 d = sqdist(ta[v1[k]],ta[v2[k]]);
                 r1 = SQ(ta[v1[k]][0])+SQ(ta[v1[k]][1])+
@@ -275,12 +244,12 @@ void *compute_3d_power_edges(simplex *s, void *p) {
 
                     /* construct its dual power face */
                     s->edgestatus[k]=POW;
-		  
+
                     /* visit the next simplex */
                     /* print orthocenter of s->neigh[v3[k]].simp ...*/
                     prevs = s;
                     nexts = s->neigh[v3[k]].simp;
-		  
+
                     ns = v3[k];
                     numedges=0;
                     while (nexts != s) {
@@ -306,14 +275,14 @@ void *compute_3d_power_edges(simplex *s, void *p) {
                                 }
                                 else if (nexts->neigh[l].vert==nextv) {
                                     nnextv = l;
-                                    continue; 
-			 
+                                    continue;
+
                                 }
                                 else {
                                     nnextv = l;
                                 }
                             }
-		      
+
                             if (nedge0 > nedge1) { l1 = nedge1; l2 = nedge0; }
                             else { l2 = nedge1; l1 = nedge0; }
                             if (l1==0) {
@@ -325,7 +294,7 @@ void *compute_3d_power_edges(simplex *s, void *p) {
                                 if (l2==2) nk = 3;
                                 else nk = 4;
                             }
-                            else nk = 5;  
+                            else nk = 5;
                             /* found nk for the edge */
                             nexts->edgestatus[nk]=POW; /* record that it's visited */
                             /* visit next simplex (opposite vertex ns )*/
@@ -342,7 +311,7 @@ void *compute_3d_power_edges(simplex *s, void *p) {
                     }
                     fprintf(PNF,"\n");numfaces++;
                 }
-                else { 
+                else {
                     s->edgestatus[k]=NOT_POW;
                 }
             }	      /* skip if the edge is visited before */
@@ -356,7 +325,7 @@ void *compute_3d_power_edges(simplex *s, void *p) {
 
 /* the function for computing the medial axis */
 
-void *compute_axis (simplex *s, void *p) { 
+void *compute_axis (simplex *s, void *p) {
 
 	static out_func *out_func_here;
 	point v[MAXDIM];
@@ -365,48 +334,48 @@ void *compute_axis (simplex *s, void *p) {
 	int edgedata[6];
 	int indices[6]; /* store the indices */
     int j, k, inf=0;
-	
+
     double ta[4][4];
-        
+
 	if (p) {out_func_here = (out_func*)p; if (!s) return NULL;}
 
-	
+
 	if ((s->status == CNV)||(s->status == SLV)) return NULL; /* skip inf faces */
 	for (j=0;j<cdim;j++) {
-        v[j] = s->neigh[j].vert; 
+        v[j] = s->neigh[j].vert;
         for (k=0;k<4;k++) {
             ta[j][k] = v[j][k]/mult_up; /* restore original coords   */
         }
 	}
- 
+
 	if (!inf) {
         for (k=0;k<6;k++) { /* for each edge */
             edgedata[k]=0;
             if ((s->edgestatus[k]!=POW) ) { /* not dual to a power  face  */
-	       
-	
-	       
+
+
+
                 point1 = v[v1[k]];
                 point2 = v[v2[k]];
                 pindex=site_numm(point1);
                 qindex=site_numm(point2);
-                if(adjlist[pindex].label==IN && adjlist[qindex].label==IN) 
+                if(adjlist[pindex].label==IN && adjlist[qindex].label==IN)
                 {
                     if(s->edgestatus[k]!=ADDAXIS) {
-                        num_axedgs++;  
+                        num_axedgs++;
                         fprintf(AXIS,"2 %d %d \n ",pindex,qindex);
                     }
                     edgedata[k]=VALIDEDGE;
                     indices[v1[k]]=pindex ;
                     indices[v2[k]]=qindex ;
                     s->edgestatus[k]=ADDAXIS;
-		    
-		  
+
+
                 }
                 /* now start adding triangles if present */
             }
         }
-	 
+
         if((edgedata[0]==VALIDEDGE)&& (edgedata[1]==VALIDEDGE)
            && (edgedata[3]==VALIDEDGE))
         {
@@ -424,7 +393,7 @@ void *compute_axis (simplex *s, void *p) {
             fprintf(AXIS,"3 %d %d %d \n",indices[v1[1]],
                     indices[v2[2]],indices[v1[5]]);
             fprintf(AXISFACE,"3 %d %d %d \n",indices[v1[1]],
-                    indices[v2[2]],indices[v1[5]]); 
+                    indices[v2[2]],indices[v1[5]]);
             num_axedgs++;
             num_axfaces++;
 
@@ -449,10 +418,10 @@ void *compute_axis (simplex *s, void *p) {
             num_axedgs++;
             num_axfaces++;
         }
-		
-	     
-		     
-	  
+
+
+
+
 
 	}
 	return NULL;
@@ -460,14 +429,14 @@ void *compute_axis (simplex *s, void *p) {
 
 
 
-  
-  
 
 
-/* To print out powercrust faces */ 
+
+
+/* To print out powercrust faces */
 void construct_face(simplex *s, short k)
 {
-    site edge0, edge1, nextv, remv, prevv,outsite,insite; 
+    site edge0, edge1, nextv, remv, prevv,outsite,insite;
     simplex *prevs, *nexts;
     int j, numedges, l1, l2, nk, l, ns, nedge0, nedge1, nremv, nnextv, i;
     char cface[200];
@@ -493,7 +462,7 @@ void construct_face(simplex *s, short k)
         outpole[j]=outsite[j]/mult_up;
         inpole[j]=insite[j]/mult_up;
     }
-    
+
 
     nextv = s->neigh[v3[k]].vert;
     /* nextv is the opposite vtx of the next simplex */
@@ -504,12 +473,12 @@ void construct_face(simplex *s, short k)
 
     /* construct its dual power face */
     s->edgestatus[k]=POW;
-		  
+
     /* visit the next simplex */
     /* print orthocenter of s->neigh[v3[k]].simp ...*/
     prevs = s;
     nexts = s->neigh[v3[k]].simp;
-		  
+
     ns = v3[k];
     numedges=0;
     while (nexts != s) {
@@ -550,7 +519,7 @@ void construct_face(simplex *s, short k)
                 else if (nexts->neigh[l].vert==nextv) {
                     /*  if (nexts->neigh[nremv].simp == s) { */
                     nnextv = l;
-                    continue; 
+                    continue;
                     /*}
                       else fprintf(DFILE,"cannot happen l=%d!!\n",l); */
                 }
@@ -558,7 +527,7 @@ void construct_face(simplex *s, short k)
                     nnextv = l;
                 }
             }
-		    
+
             if (nedge0 > nedge1) { l1 = nedge1; l2 = nedge0; }
             else { l2 = nedge1; l1 = nedge0; }
             if (l1==0) {
@@ -570,7 +539,7 @@ void construct_face(simplex *s, short k)
                 if (l2==2) nk = 3;
                 else nk = 4;
             }
-            else nk = 5;  
+            else nk = 5;
             /* found nk for the edge */
             nexts->edgestatus[nk]=POW; /* record that it's visited */
             /* visit next simplex (opposite vertex ns )*/
@@ -579,21 +548,21 @@ void construct_face(simplex *s, short k)
             nexts = nexts->neigh[nremv].simp;
         }
     }
-		  
+
     if (prevs->status != POLE_OUTPUT) {
         prevs->status = POLE_OUTPUT;
         prevs->poleindex = num_vtxs++;
         fprintf(PC,"%f %f %f\n", prevs->vv[0], prevs->vv[1], prevs->vv[2]);
     }
-		  
+
     if(numedges<3) {
         plane[numedges][0]=prevs->vv[0];
         plane[numedges][1]=prevs->vv[1];
         plane[numedges][2]=prevs->vv[2];
-		    
+
     }
     sprintf(indface[numedges],"%ld ",prevs->poleindex);
-		 
+
     numedges++;
     fprintf(PNF,"%d ",numedges);
 
@@ -603,9 +572,9 @@ void construct_face(simplex *s, short k)
     else
         for(i=0;i<numedges;i++)
             fprintf(PNF,"%s ",indface[i]);
-		    
+
     fprintf(PNF,"\n");
-		  
+
     num_faces++;
 }
 
@@ -625,7 +594,7 @@ int correct_orientation(double *p1,double *p2,double *p3,double *inp,double *out
     v1[0]=p2[0]-p1[0];
     v1[1]=p2[1]-p1[1];
     v1[2]=p2[2]-p1[2];
-  
+
     v2[0]=p3[0]-p2[0];
     v2[1]=p3[1]-p2[1];
     v2[2]=p3[2]-p2[2];
@@ -638,19 +607,19 @@ int correct_orientation(double *p1,double *p2,double *p3,double *inp,double *out
         numplus++;
     else
         numminus++;
-  
-  
+
+
     if((ycross*normal[1]) > 0)
         numplus++;
     else
         numminus++;
 
-  
+
     if((zcross*normal[2]) > 0)
         numplus++;
     else
         numminus++;
-  
+
     if(numplus > numminus)
         return 1;
     else

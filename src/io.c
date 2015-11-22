@@ -203,7 +203,7 @@ void *check_simplex(simplex *s, void *dum){
                     print_simplex_f(sns, DFILE, &print_neighbor_full);
                     print_simplex_f(s, DFILE, &print_neighbor_full);
                     exit(1);
-                }   
+                }
             }
         }
     }
@@ -230,7 +230,7 @@ void vv_out(point *v, int vdim, FILE *Fin, int amble) {
             fprintf(F, "%G ", v[j][i]/mult_up);
         }
         fprintf(F, " | ");
-    } 
+    }
     fprintf(F, "\n");
     return;
 }
@@ -261,7 +261,7 @@ void off_out(point *v, int vdim, FILE *Fin, int amble) {
     if (pdim!=3) { warning(-10, off apparently for 3d points only); return;}
 
     if (amble==0) {
-        for (i=0;i<vdim;i++) if (v[i]==infinity) return;
+        for (i=0;i<vdim;i++) if (v[i]==coordsAtInfinity) return;
         fprintf(OFFFILE, "%d ", vdim);
         for (j=0;j<vdim;j++) fprintf(OFFFILE, "%ld ", (site_num)(v[j]));
         fprintf(OFFFILE,"\n");
@@ -271,28 +271,28 @@ void off_out(point *v, int vdim, FILE *Fin, int amble) {
         efclose(OFFFILE);
 
         fprintf(F, "    OFF\n");
-    
+
         sprintf(comst, "wc %s", tmpfilenam);
         G = epopen(comst, "r");
         fscanf(G, "%d", &i);
         fprintf(F, " %d", i);
         pclose(G);
-    
+
         sprintf(comst, "wc %s", offfilenam);
         G = epopen(comst, "r");
         fscanf(G, "%d", &i);
         fprintf(F, " %d", i);
         pclose(G);
-    
+
         fprintf (F, " 0\n");
-    
+
         G = efopen(tmpfilenam, "r");
         while (fgets(buf, sizeof(buf), G)) fprintf(F, "%s", buf);
         efclose(G);
-    
+
         G = efopen(offfilenam, "r");
-    
-    
+
+
         while (fgets(buf, sizeof(buf), G)) fprintf(F, "%s", buf);
         efclose(G);
     }
@@ -315,7 +315,7 @@ void mp_out(point *v, int vdim, FILE *Fin, int amble) {
     if (amble==0) {
         int i;
         if (!v) return;
-        for (i=0;i<vdim;i++) if (v[i]==infinity) {
+        for (i=0;i<vdim;i++) if (v[i]==coordsAtInfinity) {
             point t=v[i];
             v[i]=v[vdim-1];
             v[vdim-1] = t;
@@ -323,7 +323,7 @@ void mp_out(point *v, int vdim, FILE *Fin, int amble) {
             break;
         }
         fprintf(F, "draw ");
-        for (i=0;i<vdim;i++) 
+        for (i=0;i<vdim;i++)
             fprintf(F,
                     (i+1<vdim) ? "(%Gu,%Gu)--" : "(%Gu,%Gu);\n",
                     v[i][0]/mult_up,v[i][1]/mult_up
@@ -349,7 +349,7 @@ void ps_out(point *v, int vdim, FILE *Fin, int amble) {
     if (amble==0) {
         int i;
         if (!v) return;
-        for (i=0;i<vdim;i++) if (v[i]==infinity) {
+        for (i=0;i<vdim;i++) if (v[i]==coordsAtInfinity) {
             point t=v[i];
             v[i]=v[vdim-1];
             v[vdim-1] = t;
@@ -359,7 +359,7 @@ void ps_out(point *v, int vdim, FILE *Fin, int amble) {
         fprintf(F,
                 "newpath %G %G moveto\n",
                 v[0][0]*scaler,v[0][1]*scaler);
-        for (i=1;i<vdim;i++) 
+        for (i=1;i<vdim;i++)
             fprintf(F,
                     "%G %G lineto\n",
                     v[i][0]*scaler,v[i][1]*scaler
@@ -371,7 +371,7 @@ void ps_out(point *v, int vdim, FILE *Fin, int amble) {
         len[0] = maxs[0]-mins[0]; len[1] = maxs[1]-mins[1];
         maxlen = (len[0]>len[1]) ? len[0] : len[1];
         scaler = 216/maxlen;
-    
+
         fprintf(F, "%%%%BoundingBox: %G %G %G %G \n",
                 mins[0]*scaler,
                 mins[1]*scaler,
@@ -396,8 +396,8 @@ void cpr_out(point *v, int vdim, FILE *Fin, int amble) {
     if (Fin) {F=Fin; if (!v) return;}
 
     if (pdim!=3) { warning(-10, cpr for 3d points only); return;}
-    
-    for (i=0;i<vdim;i++) if (v[i]==infinity) return;
+
+    for (i=0;i<vdim;i++) if (v[i]==coordsAtInfinity) return;
 
     fprintf(F, "t %G %G %G %G %G %G %G %G %G 3 128\n",
             v[0][0]/mult_up,v[0][1]/mult_up,v[0][2]/mult_up,
@@ -416,15 +416,15 @@ void *facets_print(simplex *s, void *p) {
     static out_func *out_func_here;
     point v[MAXDIM];
     int j;
- 
-    if (p) {out_func_here = (out_func*)p; if (!s) return NULL;} 
- 
+
+    if (p) {out_func_here = (out_func*)p; if (!s) return NULL;}
+
     for (j=0;j<cdim;j++) v[j] = s->neigh[j].vert;
- 
+
     out_func_here(v,cdim,0,0);
- 
+
     return NULL;
-}  
+}
 
 void *ridges_print(simplex *s, void *p) {
 
@@ -442,7 +442,7 @@ void *ridges_print(simplex *s, void *p) {
         }
         out_func_here(v,cdim-1,0,0);
     }
-    return NULL; 
+    return NULL;
 }
 
 

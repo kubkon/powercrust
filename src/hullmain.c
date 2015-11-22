@@ -114,7 +114,7 @@ long site_numm(site p)
 {
   long i,j;
 
-  if (( vd || power_diagram) && p==infinity)
+  if (( vd || power_diagram) && p==coordsAtInfinity)
   {
     return -1;
   }

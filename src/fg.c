@@ -96,26 +96,26 @@ STORAGE(Tree)
 #define compare(i,j) (site_num(i)-site_num(j))
     /* This is the comparison.                                       */
     /* Returns <0 if i<j, =0 if i=j, and >0 if i>j                   */
- 
+
 #define node_size(x) ((x) ? ((x)->size) : 0 )
     /* This macro returns the size of a node.  Unlike "x->size",     */
     /* it works even if x=NULL.  The test could be avoided by using  */
     /* a special version of NULL which was a real node with size 0.  */
- 
-    Tree * splay (site i, Tree *t) 
+
+    Tree * splay (site i, Tree *t)
     /* Splay using the key i (which may or may not be in the tree.) */
     /* The starting root is t, and the tree used is defined by rat  */
     /* size fields are maintained */
 {
     Tree N, *l, *r, *y;
     int comp, root_size, l_size, r_size;
-    
+
     if (!t) return t;
     N.left = N.right = NULL;
     l = r = &N;
     root_size = node_size(t);
     l_size = r_size = 0;
- 
+
     for (;;) {
         comp = compare(i, t->key);
         if (comp < 0) {
@@ -165,7 +165,7 @@ STORAGE(Tree)
         y->size = r_size;
         r_size -= 1+node_size(y->right);
     }
- 
+
     l->right = t->left;                                /* assemble */
     r->left = t->right;
     t->left = N.right;
@@ -330,7 +330,7 @@ void *add_to_fg(simplex *s, void *dum) {
             fq->facets->fgs = find_fg(s, q|m);
         }
     }
-    return NULL;    
+    return NULL;
 }
 
 fg *build_fg(simplex *root) {
@@ -348,7 +348,7 @@ void visit_fg_i(   void (*v_fg)(Tree *, int, int),
     assert(t->fgs);
     if (t->fgs->mark!=vn) {
         t->fgs->mark = vn;
-        if (t->key!=infinity && !mo[site_num(t->key)]) boundaryc = 0; 
+        if (t->key!=coordsAtInfinity && !mo[site_num(t->key)]) boundaryc = 0;
         v_fg(t,depth, boundaryc);
         visit_fg_i(v_fg, t->fgs->facets,depth+1, vn, boundaryc);
     }
@@ -370,7 +370,7 @@ int visit_fg_i_far(void (*v_fg)(Tree *, int),
     assert(t->fgs);
     if (t->fgs->mark!=vn) {
         t->fgs->mark = vn;
-        nb = (t->key==infinity) || mo[site_num(t->key)];
+        nb = (t->key==coordsAtInfinity) || mo[site_num(t->key)];
         if (!nb && !visit_fg_i_far(v_fg, t->fgs->facets,depth+1,vn))
             v_fg(t,depth);
     }
@@ -479,13 +479,13 @@ void print_hist_fg(simplex *root, fg *faces_gr, FILE *F) {
         fprintf(F, "%d/%d/%d",
                 (int)tot_far[k], (int)tot_good[k], (int)tot_good[k] + (int)tot_bad[k]);
     }
-        
-    
+
+
     for (j=0;j<100;j++) {
         for (i=19; i>=0 && !fg_hist[i][j] && !fg_hist_bad[i][j]; i--);
         if (i==-1) continue;
         fprintf(F, "\n%d    ",j);fflush(F);
-            
+
         for (k=0;k<=i;k++) {
             if (k==0) fprintf(F, "  ");
             else fprintf(F,"            ");
