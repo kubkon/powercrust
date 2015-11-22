@@ -3,9 +3,9 @@
  * Power Crust software, by Nina Amenta, Sunghee Choi and Ravi Krishna Kolluri.
  * Copyright (c) 2000 by the University of Texas
  * Permission to use, copy, modify, and distribute this software for any
- * purpose without fee under the GNU Public License is hereby granted, 
- * provided that this entire notice  is included in all copies of any software 
- * which is or includes a copy or modification of this software and in all copies 
+ * purpose without fee under the GNU Public License is hereby granted,
+ * provided that this entire notice  is included in all copies of any software
+ * which is or includes a copy or modification of this software and in all copies
  * of the supporting documentation for such software.
  * THIS SOFTWARE IS BEING PROVIDED "AS IS", WITHOUT ANY EXPRESS OR IMPLIED
  * WARRANTY.  IN PARTICULAR, NEITHER THE AUTHORS NOR AT&T MAKE ANY
@@ -13,7 +13,7 @@
  * OF THIS SOFTWARE OR ITS FITNESS FOR ANY PARTICULAR PURPOSE.
  */
 
-/* 
+/*
  * This file is a significant modification of Ken Clarkson's file hull.h
  * We include his copyright notice in accordance with its terms.
  *                                                                     - Nina, Sunghee and Ravi
@@ -82,14 +82,14 @@
 
 /*RAVI */
 
-#define VALIDEDGE 24 
+#define VALIDEDGE 24
 #define INVALIDEDGE 23
 #define INEDGE 25
 #define OUTEDGE 26
 #define ADDAXIS 13
 #define PRESENT 19
 #define FIXED 20
-#define REMOVED 21  /* for the thinning  stuff */ 
+#define REMOVED 21  /* for the thinning  stuff */
 
 /* for priority queue */
 #define LEFT(i) ((i)*2)
@@ -136,7 +136,7 @@ typedef point site;
 
 extern site p;          /* the current site */
 
-extern Coord infinity[10];  /* point at infinity for Delaunay triang */
+extern Coord coordsAtInfinity[10];  /* point at infinity for Delaunay triang */
 
 extern int
 rdim,   /* region dimension: (max) number of sites specifying region */
@@ -175,29 +175,29 @@ typedef struct simplex {
     /*    float Sb; */
     short status;/* sunghee : 0(CNV) if on conv hull so vv contains normal vector;
                     1(VV) if vv points to circumcenter of simplex;
-                    -1(SLV) if cond=0 so vv points to hull 
+                    -1(SLV) if cond=0 so vv points to hull
                     2(AV) if av contains averaged pole */
     long poleindex; /* for 1st DT, if status==POLE_OUTPUT, contains poleindex; for 2nd, contains vertex index for powercrust output for OFF file format */
     short edgestatus[6]; /* edge status :(01)(02)(03)(12)(13)(23)
                             FIRST_EDGE if not visited
                             VISITED
                             NOT_POW if not dual to powercrust faces
-                            POW if dual to powercrust faces */  
-    /*  short tristatus[4];   triangle status :     
+                            POW if dual to powercrust faces */
+    /*  short tristatus[4];   triangle status :
         FIRST if not visited
         NO   if not a triangle
         DEG  if degenerate triangle
         SURF if surface triangle
         NORM if fails normal test
         VOR  if falis voronoi edge test
-        VOR_NORM if fails both test */ 
-    /* NOTE!!! neighbors has to be the LAST field in the simplex stucture, 
-       since it's length gets altered by some tricky Clarkson-move. 
-       Also peak has to be the one before it. 
+        VOR_NORM if fails both test */
+    /* NOTE!!! neighbors has to be the LAST field in the simplex stucture,
+       since it's length gets altered by some tricky Clarkson-move.
+       Also peak has to be the one before it.
        Don't try to move these babies!! */
     long visit;     /* number of last site visiting this simplex */
     basis_s* normal;    /* normal vector pointing inward */
-    neighbor peak;      /* if null, remaining vertices give facet */ 
+    neighbor peak;      /* if null, remaining vertices give facet */
     neighbor neigh[1];  /* neighbors of simplex */
 } simplex;
 STORAGE_GLOBALS(simplex)
@@ -244,7 +244,7 @@ typedef struct fnode {
 
 
 /* end defn for medial axis thinning */
-       
+
 
 /* structure for list of opposite poles, opplist. */
 typedef struct plist {
@@ -261,8 +261,8 @@ typedef struct edgesimp {
     long pid;
     struct edgesimp *next;
 } edgesimp;
- 
-/* additional info about poles: label for pole, pointer to list of regular 
+
+/* additional info about poles: label for pole, pointer to list of regular
    triangulation edges, squared radius of  polar ball. adjlist is an
    array of polelabels. */
 typedef struct polelabel {
@@ -279,14 +279,14 @@ typedef struct polelabel {
 } polelabel;
 
 typedef struct queuenode {
-    long pid; 
+    long pid;
     struct queuenode *next;
 } queuenode;
 
 typedef struct temp {
     struct simplex *simp;
-    int vertptr[3];  
-    int novert; 
+    int vertptr[3];
+    int novert;
     /* 0,1,2,3 : 3 vertices but ts->neigh[ti].vert are vertices of triangle */
 } temp;
 
@@ -323,7 +323,7 @@ STORAGE_GLOBALS(Tree)
         short mark;
         int ref_count;
     } fg_node;
-    
+
 STORAGE_GLOBALS(fg)
 
 
@@ -342,7 +342,7 @@ void initialize();
 
 typedef site gsitef(void);
 
-extern gsitef *get_site;    
+extern gsitef *get_site;
 
 typedef long site_n(site);
 extern site_n *site_num;
@@ -447,14 +447,14 @@ void *print_simplex(simplex*, void*);
 void print_triang(simplex*, FILE*, print_neighbor_f*);
 
 
-out_func vlist_out, ps_out, cpr_out, mp_out, off_out, vv_out; 
+out_func vlist_out, ps_out, cpr_out, mp_out, off_out, vv_out;
 /* sunghee : added vlist_out */
 /* functions for different formats */
 
 /* added compute axis RAVI */
-visit_func facets_print, afacets_print, ridges_print, 
-    compute_vv, compute_pole1, compute_pole2, test_surface, 
-    compute_2d_power_vv, compute_3d_power_vv, compute_3d_power_edges,compute_axis; 
+visit_func facets_print, afacets_print, ridges_print,
+    compute_vv, compute_pole1, compute_pole2, test_surface,
+    compute_2d_power_vv, compute_3d_power_vv, compute_3d_power_edges,compute_axis;
 /* to print facets, alpha facets, ridges */
 /* Sunghee added compute_cc, compute_pole1, compute_pole2, test_surface */
 

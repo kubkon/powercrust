@@ -38,7 +38,7 @@ simplex *ch_root;
 
 #define SWAP(X,a,b) {X t; t = a; a = b; b = t;}
 
-#define DMAX 
+#define DMAX
 
 double Huge;
 
@@ -60,7 +60,7 @@ int basis_vec_size;
     if (i<cdim) c = x->whatc;                   \
 }                                   \
 
-    
+
 Coord Vec_dot(point x, point y) {
     int i;
     Coord sum = 0;
@@ -135,8 +135,8 @@ STORAGE(basis_s)
 
     typedef Coord site_struct;
 
-    Coord   infinity[10]={57.2,0,0,0,0}; /* point at infinity for vd; value not used */
-    
+    Coord   coordsAtInfinity[10]={57.2,0,0,0,0}; /* point at infinity for vd; value not used */
+
     void print_site(site p, FILE* F)
 {print_point(F, pdim,p);fprintf(F, "\n");}
 
@@ -148,7 +148,7 @@ STORAGE(basis_s)
 
 /* tables for runtime stats */
 int A[100]={0}, B[100] ={0}, C[100] = {0}, D[100] ={0};
-int tot =0, totinf=0, bigt=0; 
+int tot =0, totinf=0, bigt=0;
 
 #define two_to(x) ( ((x)<20) ? 1<<(x) : ldexp(1,(x)) )
 
@@ -193,10 +193,10 @@ double sc(basis_s *v,simplex *s, int k, int j) {
             DEBTR(-2) DEBEXP(-2, ldetbound)
             print_simplex_f(s, DFILE, &print_neighbor_full);
         print_basis(DFILE,v);
-        EDEBS           
-            return 0;                   
+        EDEBS
+            return 0;
     } else {
-        lscale = logb(2*Sb/(v->sqb + v->sqa*b_err_min))/2;  
+        lscale = logb(2*Sb/(v->sqb + v->sqa*b_err_min))/2;
         if (lscale > max_scale) {
             lscale = max_scale;
         } else if (lscale<0) lscale = 0;
@@ -271,32 +271,32 @@ int reduce_inner(basis_s *v, simplex *s, int k) {
         dd = -floor(0.5+dd);
         Ax_plus_y( dd, VA(snibv), va);
         }
-    */      
+    */
     for (j=0;j<250;j++) {
 
         memcpy(vb,va,basis_vec_size);
         for (i=k-1,sni=s->neigh+k-1;i>0;i--,sni--) {
             snibv = sni->basis;
             dd = -Vec_dot(VB(snibv),vb)/ snibv->sqb;
-            Ax_plus_y( dd, VA(snibv), vb);      
+            Ax_plus_y( dd, VA(snibv), vb);
         }
-        v->sqb = Norm2(vb);     
+        v->sqb = Norm2(vb);
         v->sqa = Norm2(va);
-        
+
         if (2*v->sqb >= v->sqa) {B[j]++; return 1;}
 
         Vec_scale_test(rdim,scale = sc(v,s,k,j),va);
-        
+
         for (i=k-1,sni=s->neigh+k-1;i>0;i--,sni--) {
             snibv = sni->basis;
-            dd = -Vec_dot(VB(snibv),va)/snibv->sqb; 
+            dd = -Vec_dot(VB(snibv),va)/snibv->sqb;
             dd = floor(dd+0.5);
             Ax_plus_y_test( dd, VA(snibv), va);
-        }       
+        }
     }
     if (failcount++<10) {
         DEB(-8, reduce_inner failed on:)
-            DEBTR(-8) print_basis(DFILE, v); 
+            DEBTR(-8) print_basis(DFILE, v);
         print_simplex_f(s, DFILE, &print_neighbor_full);
     }
     return 0;
@@ -442,8 +442,8 @@ void get_normal_sede(simplex *s) {
         }
         DEBS(-1) if (!check_perps(s)) exit(1); EDEBS
                                                    return;
-    }   
-        
+    }
+
     for (i=cdim+1,rn = ch_root->neigh+cdim-1; i; i--, rn--) {
         for (j = 0; j<cdim && rn->vert != s->neigh[j].vert;j++);
         if (j<cdim) continue;
@@ -480,12 +480,12 @@ int sees(site p, simplex *s) {
         else {trans(zz,p,tt); lift(zz,s);}
     } else trans(zz,p,tt);
     for (i=0;i<3;i++) {
-        dd = Vec_dot(zz,s->normal->vecs);   
+        dd = Vec_dot(zz,s->normal->vecs);
         if (dd == 0.0) {
             DEBS(-7) DEB(-6,degeneracy:); DEBEXP(-6,site_num(p));
             print_site(p, DFILE); print_simplex_f(s, DFILE, &print_neighbor_full); EDEBS
                                                                                        return 0;
-        } 
+        }
         dds = dd*dd/s->normal->sqb/Norm2(zz);
         if (dds > b_err_min_sq) return (dd<0);
         get_basis_sede(s);
@@ -512,7 +512,7 @@ double radsq(simplex *s) {
     /* square of ratio of circumcircle radius to
        max edge length for Delaunay tetrahedra */
 
-    
+
     for (i=0,sn=s->neigh;i<cdim;i++,sn++)
         if (sn->vert == infinity) return Huge;
 
@@ -750,7 +750,7 @@ simplex *build_convex_hull(gsitef *get_s, site_n *site_numm, short dim, short vd
     point_size = site_size = sizeof(Coord)*pdim;
     basis_vec_size = sizeof(Coord)*rdim;
     basis_s_size = sizeof(basis_s)+ (2*rdim-1)*sizeof(Coord);
-    simplex_size = sizeof(simplex) + (rdim-1)*sizeof(neighbor); 
+    simplex_size = sizeof(simplex) + (rdim-1)*sizeof(neighbor);
     Tree_size = sizeof(Tree);
     fg_size = sizeof(fg);
 
@@ -786,4 +786,3 @@ void free_hull_storage(void) {
     free_Tree_storage();
     free_fg_storage();
 }
-
